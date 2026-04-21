@@ -3,7 +3,7 @@
 # customenu - Start menu for your terminal.
 
 
-![alt text](https://raw.githubusercontent.com/john-json/customenu-cli/refs/heads/main/startmenu.png)
+![alt text](https://raw.githubusercontent.com/john-json/customenu-cli/refs/heads/main/Screenshot.png)
 
 
 # info
