@@ -1,6 +1,6 @@
 
 
-# customenu - Start menu for your terminal.
+# STUI - Start menu for your terminal.
 
 
 ![alt text](https://raw.githubusercontent.com/john-json/customenu-cli/refs/heads/main/Screenshot.png)
