@@ -9,12 +9,16 @@
 # info
 
 Python based.
-</br>
-need fuzzy finder to use the search.
-</br>
-yazi for the finder.
 
-use header.txt to change the header text
+# Apps needed:
+Spotify: https://github.com/aome510/spotify-player
+Search: https://github.com/junegunn/fzf
+Editor: https://neovim.io/doc/install/
+Matrix: https://github.com/abishekvashok/cmatrix
+Finder: https://github.com/sxyazi/yazi
+</br>
+</br>
+# Use header.txt to change the header text
 </br>
 
 # To run
