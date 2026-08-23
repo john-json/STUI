@@ -24,7 +24,7 @@ DEFAULT_MENU = {
         {"label": "Editor", "cmd": "bash -lc 'nvim'", "shortcut": "Ctrl+E"},
         {"label": "Extras", "cmd": "popup", "shortcut": "Ctrl+X"},
         {"label": "Search", "cmd": "bash -lc 'fzf; read -p \"Enter\"'", "shortcut": "Ctrl+S"},
-        {"label": "Switch to shell", "cmd": "shell", "shortcut": "Ctrl+Space"}
+        {"label": "Quit", "cmd": "shell", "shortcut": "Ctrl+Space"}
     ]
 }
 
