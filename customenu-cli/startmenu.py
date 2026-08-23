@@ -15,6 +15,8 @@ BASE_DIR = os.path.expanduser("~/.config/customenu-cli")
 MENU_FILE = os.path.join(BASE_DIR, "menu.json")
 HEADER_FILE = os.path.join(BASE_DIR, "header.txt")
 
+HEADER_MENU_GAP = 5
+
 os.makedirs(BASE_DIR, exist_ok=True)
 
 DEFAULT_MENU = {
@@ -188,7 +190,6 @@ def draw_ansi_line(stdscr, y, x, line):
             pass
         cur_x += len(chunk)
 
-# ------------ CLEAN STATUS BAR (NO CAPSULES, NO CPU/MEM, NO BACKGROUND) ----------
 def draw_status(stdscr, left_text, weather, clock):
     h, w = stdscr.getmaxyx()
 
@@ -206,15 +207,13 @@ def draw_status(stdscr, left_text, weather, clock):
     except curses.error:
         pass
 
-# -----------------------------------------------------------------------------
-
 def draw_full(stdscr, header_lines, menu_items, selected):
     stdscr.erase()
     h, w = stdscr.getmaxyx()
 
     header_h = len(header_lines)
     menu_h = len(menu_items)
-    total_h = header_h + 2 + menu_h
+    total_h = header_h + HEADER_MENU_GAP + menu_h
     start_y = max(1, (h - total_h) // 2)
 
     for i, ln in enumerate(header_lines):
@@ -234,7 +233,7 @@ def draw_full(stdscr, header_lines, menu_items, selected):
     right_col = mid + 16
 
     for i, it in enumerate(menu_items):
-        y = start_y + header_h + 2 + i
+        y = start_y + header_h + HEADER_MENU_GAP + i
         label = it.get("label", "")
         shortcut = iconify_shortcut(it.get("shortcut", ""))
         if 0 <= y < h - 1:
@@ -260,7 +259,7 @@ def draw_full(stdscr, header_lines, menu_items, selected):
 def update_selection(stdscr, header_lines, menu_items, prev, cur):
     h, w = stdscr.getmaxyx()
     header_h = len(header_lines)
-    base = max(1, (h - (header_h + 2 + len(menu_items))) // 2) + header_h + 2
+    base = max(1, (h - (header_h + HEADER_MENU_GAP + len(menu_items))) // 2) + header_h + HEADER_MENU_GAP
     mid = w // 2
     left_col = mid - 20
     right_col = mid + 16
@@ -282,8 +281,6 @@ def update_selection(stdscr, header_lines, menu_items, prev, cur):
                 pass
 
     stdscr.refresh()
-
-# ---------------- popups unchanged ----------------
 
 def prompt_input_shell(prompt="pkg"):
     curses.endwin()
