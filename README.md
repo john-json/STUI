@@ -12,9 +12,13 @@ Python based.
 
 # Apps needed:
 Spotify: https://github.com/aome510/spotify-player
+</br>
 Search: https://github.com/junegunn/fzf
+</br>
 Editor: https://neovim.io/doc/install/
+</br>
 Matrix: https://github.com/abishekvashok/cmatrix
+</br>
 Finder: https://github.com/sxyazi/yazi
 </br>
 </br>
