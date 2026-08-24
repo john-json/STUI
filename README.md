@@ -35,6 +35,11 @@ header.txt to change the header text
 ```
 python /path/to/menufolder/startmenu.py
 ```
+or add to zshrc to run with "menu" command
+
+```
+alias menu="python3 ~/.config/customenu-cli/startmenu.py"
+```
 
 # To use as a startmenu in zsh add this line
 
