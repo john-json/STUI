@@ -25,7 +25,9 @@ Finder: https://github.com/sxyazi/yazi
 </br>
 config is set to use .zshrc https://github.com/ohmyzsh/ohmyzsh/wiki/Installing-ZSH
 </br>
-# Use header.txt to change the header text
+</br>
+# header
+header.txt to change the header text
 </br>
 
 # To run
