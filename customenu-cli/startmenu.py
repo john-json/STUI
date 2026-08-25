@@ -15,7 +15,11 @@ BASE_DIR = os.path.expanduser("~/.config/customenu-cli")
 MENU_FILE = os.path.join(BASE_DIR, "menu.json")
 HEADER_FILE = os.path.join(BASE_DIR, "header.txt")
 
-HEADER_MENU_GAP = 5
+HEADER_MENU_GAP = 10
+MENU_ROW_HEIGHT = 2
+MENU_LABEL_ATTR = curses.A_BOLD
+MENU_SHORTCUT_ATTR = curses.A_BOLD
+
 
 os.makedirs(BASE_DIR, exist_ok=True)
 
@@ -49,8 +53,9 @@ EXTRAS_ITEMS = [
     {"label": "Finder -> yazi", "cmd": "bash -lc 'yazi || echo \"yazi not found\"; read -p \"Enter\"'"},
     {"label": "Brew …", "cmd": "brewmenu"},
     {"label": "---", "cmd": None},
-    {"label": "Matrix", "cmd": "bash -lc 'echo Custom A; read -p \"Enter\"'"},
-    {"label": "Spotify", "cmd": "bash -lc 'echo Custom B; read -p \"Enter\"'"},
+    {"label": "Matrix effect", "cmd": "bash -lc 'cmatrix || echo \"cmatrix not found\"; read -p \"Enter\"'"},
+    {"label": "Spotify", "cmd": "bash -lc 'spotify || echo \"spotify not found\"; read -p \"Enter\"'"},
+    {"label": "Config -> zsh", "cmd": "bash -lc 'nvim ~/.zshrc || echo \"Config not found\"; read -p \"Enter\"'"},
     {"label": "Back", "cmd": "back"}
 ]
 
@@ -212,7 +217,7 @@ def draw_full(stdscr, header_lines, menu_items, selected):
     h, w = stdscr.getmaxyx()
 
     header_h = len(header_lines)
-    menu_h = len(menu_items)
+    menu_h = len(menu_items) * MENU_ROW_HEIGHT
     total_h = header_h + HEADER_MENU_GAP + menu_h
     start_y = max(1, (h - total_h) // 2)
 
@@ -233,17 +238,23 @@ def draw_full(stdscr, header_lines, menu_items, selected):
     right_col = mid + 16
 
     for i, it in enumerate(menu_items):
-        y = start_y + header_h + HEADER_MENU_GAP + i
+        y = start_y + header_h + HEADER_MENU_GAP + (i * MENU_ROW_HEIGHT)
         label = it.get("label", "")
         shortcut = iconify_shortcut(it.get("shortcut", ""))
         if 0 <= y < h - 1:
             try:
+                item_attr = MENU_LABEL_ATTR
+                shortcut_attr = MENU_SHORTCUT_ATTR
+
                 if i == selected:
                     stdscr.attron(curses.A_REVERSE)
-                stdscr.addstr(y, left_col, label[:max(0, w - left_col - 1)])
-                stdscr.addstr(y, right_col, shortcut[:max(0, w - right_col - 1)])
+
+                stdscr.addstr(y, left_col, label[:max(0, w - left_col - 1)], item_attr)
+                stdscr.addstr(y, right_col, shortcut[:max(0, w - right_col - 1)], shortcut_attr)
+
                 if i == selected:
                     stdscr.attroff(curses.A_REVERSE)
+
             except curses.error:
                 pass
 
@@ -259,24 +270,34 @@ def draw_full(stdscr, header_lines, menu_items, selected):
 def update_selection(stdscr, header_lines, menu_items, prev, cur):
     h, w = stdscr.getmaxyx()
     header_h = len(header_lines)
-    base = max(1, (h - (header_h + HEADER_MENU_GAP + len(menu_items))) // 2) + header_h + HEADER_MENU_GAP
+    menu_h = len(menu_items) * MENU_ROW_HEIGHT
+    base = max(1, (h - (header_h + HEADER_MENU_GAP + menu_h)) // 2) + header_h + HEADER_MENU_GAP
+
     mid = w // 2
     left_col = mid - 20
     right_col = mid + 16
 
     for row, idx in [(prev, prev), (cur, cur)]:
         if 0 <= idx < len(menu_items):
-            y = base + idx
+            y = base + (idx * MENU_ROW_HEIGHT)
+
             label = menu_items[idx].get("label", "")
             shortcut = iconify_shortcut(menu_items[idx].get("shortcut", ""))
             try:
+                item_attr = MENU_LABEL_ATTR
+                shortcut_attr = MENU_SHORTCUT_ATTR
+
+                stdscr.addstr(y, left_col, " " * max(0, w - left_col - 1))
+
                 if idx == cur:
                     stdscr.attron(curses.A_REVERSE)
-                stdscr.addstr(y, left_col, " " * max(0, w - left_col - 1))
-                stdscr.addstr(y, left_col, label[:max(0, w - left_col - 1)])
-                stdscr.addstr(y, right_col, shortcut[:max(0, w - right_col - 1)])
+
+                stdscr.addstr(y, left_col, label[:max(0, w - left_col - 1)], item_attr)
+                stdscr.addstr(y, right_col, shortcut[:max(0, w - right_col - 1)], shortcut_attr)
+
                 if idx == cur:
                     stdscr.attroff(curses.A_REVERSE)
+
             except curses.error:
                 pass
 
