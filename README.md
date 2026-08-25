@@ -3,16 +3,19 @@
 # STUI - Start menu for your terminal.
 
 
+
+# info
+Python based start screen for your terminal. 
+clock, weather and minimal system Info.
+
+# Screenshots
 ![stui_menu](https://raw.githubusercontent.com/john-json/customenu-cli/refs/heads/main/Screenshot.png)
 
 ![sub_menu](https://raw.githubusercontent.com/john-json/customenu-cli/refs/heads/main/Screenshot_submenu.png)
 
 
-# info
 
-Python based.
-
-# Apps needed:
+# Apps to install for best experience:
 System info: https://github.com/Macchina-CLI/macchina
 </br>
 Spotify: https://github.com/aome510/spotify-player
