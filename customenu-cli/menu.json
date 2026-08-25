@@ -1,22 +1,22 @@
 {
   "menu": [
     {
-      "label": "Editor",
+      "label": "􀉆  Editor",
       "cmd": "bash -lc 'nvim'",
       "shortcut": "Ctrl+E"
     },
     {
-      "label": "Extras",
+      "label": "􃏝  Extras",
       "cmd": "popup",
       "shortcut": "Ctrl+X"
     },
     {
-      "label": "Search",
+      "label": "􀬸  Search",
       "cmd": "bash -lc 'fzf; read -p \"Enter\"'",
       "shortcut": "Ctrl+S"
     },
     {
-      "label": "Quit to shell",
+      "label": "􀩼  Quit to shell ",
       "cmd": "shell",
       "shortcut": "Ctrl+Space"
     }
