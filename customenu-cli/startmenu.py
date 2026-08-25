@@ -15,20 +15,27 @@ BASE_DIR = os.path.expanduser("~/.config/customenu-cli")
 MENU_FILE = os.path.join(BASE_DIR, "menu.json")
 HEADER_FILE = os.path.join(BASE_DIR, "header.txt")
 
-HEADER_MENU_GAP = 10
+HEADER_MENU_GAP = 5
 MENU_ROW_HEIGHT = 2
 MENU_LABEL_ATTR = curses.A_BOLD
 MENU_SHORTCUT_ATTR = curses.A_BOLD
-
+MENU_WIDTH = 34
 
 os.makedirs(BASE_DIR, exist_ok=True)
 
+# Change shortcuts here or in ~/.config/customenu-cli/menu.json
+# Supported examples:
+#   "Ctrl+E"
+#   "Ctrl+X"
+#   "Ctrl+S"
+#   "Ctrl+Q"
+#   "Ctrl+Space"
 DEFAULT_MENU = {
     "menu": [
         {"label": "Editor", "cmd": "bash -lc 'nvim'", "shortcut": "Ctrl+E"},
         {"label": "Extras", "cmd": "popup", "shortcut": "Ctrl+X"},
         {"label": "Search", "cmd": "bash -lc 'fzf; read -p \"Enter\"'", "shortcut": "Ctrl+S"},
-        {"label": "Quit", "cmd": "shell", "shortcut": "Ctrl+Space"}
+        {"label": "Quit to shell", "cmd": "shell", "shortcut": "Ctrl+Space"},
     ]
 }
 
@@ -45,18 +52,19 @@ BREW_SUB = [
     {"label": "Brew list installed", "cmd": "bash -lc 'brew list; read -p \"Enter\"'"},
     {"label": "Brew search (type name)", "cmd": "brew_search"},
     {"label": "Brew info (type name)", "cmd": "brew_info"},
-    {"label": "Back", "cmd": "back"}
+    {"label": "Back", "cmd": "back"},
 ]
 
 EXTRAS_ITEMS = [
-    {"label": "System info (macchina)", "cmd": "bash -lc 'macchina || uname -a; read -p \"Enter\"'"},
+    {"label": "System info", "cmd": "bash -lc 'macchina || uname -a; read -p \"Enter\"'"},
+    {"label": "Resource monitor", "cmd": "bash -lc 'btop || echo \"btop not found\"; read -p \"Enter\"'"},
     {"label": "Finder -> yazi", "cmd": "bash -lc 'yazi || echo \"yazi not found\"; read -p \"Enter\"'"},
     {"label": "Brew …", "cmd": "brewmenu"},
     {"label": "---", "cmd": None},
     {"label": "Matrix effect", "cmd": "bash -lc 'cmatrix || echo \"cmatrix not found\"; read -p \"Enter\"'"},
     {"label": "Spotify", "cmd": "bash -lc 'spotify || echo \"spotify not found\"; read -p \"Enter\"'"},
     {"label": "Config -> zsh", "cmd": "bash -lc 'nvim ~/.zshrc || echo \"Config not found\"; read -p \"Enter\"'"},
-    {"label": "Back", "cmd": "back"}
+    {"label": "Back", "cmd": "back"},
 ]
 
 def load_header():
@@ -67,24 +75,88 @@ def load_header():
 
 HEADER = load_header()
 
-ICON_MAP = {"Ctrl": "⌃", "Cmd": "⌘", "Alt": "⌥", "Opt": "⌥", "Shift": "⇧", "Space": "␣"}
+ICON_MAP = {
+    "Ctrl": "⌃",
+    "Cmd": "⌘",
+    "Alt": "⌥",
+    "Opt": "⌥",
+    "Shift": "⇧",
+    "Space": "␣",
+}
 
 def iconify_shortcut(s):
     parts = [p.strip() for p in s.split("+")]
     return " ".join(ICON_MAP.get(p, p) for p in parts)
+
+def parse_shortcut_to_keycode(shortcut):
+    if not shortcut:
+        return None
+
+    normalized = shortcut.strip().lower()
+
+    ctrl_map = {
+        "ctrl+space": 0,
+        "ctrl+@": 0,
+        "ctrl+a": 1,
+        "ctrl+b": 2,
+        "ctrl+c": 3,
+        "ctrl+d": 4,
+        "ctrl+e": 5,
+        "ctrl+f": 6,
+        "ctrl+g": 7,
+        "ctrl+h": 8,
+        "ctrl+i": 9,
+        "ctrl+j": 10,
+        "ctrl+k": 11,
+        "ctrl+l": 12,
+        "ctrl+m": 13,
+        "ctrl+n": 14,
+        "ctrl+o": 15,
+        "ctrl+p": 16,
+        "ctrl+q": 17,
+        "ctrl+r": 18,
+        "ctrl+s": 19,
+        "ctrl+t": 20,
+        "ctrl+u": 21,
+        "ctrl+v": 22,
+        "ctrl+w": 23,
+        "ctrl+x": 24,
+        "ctrl+y": 25,
+        "ctrl+z": 26,
+    }
+
+    return ctrl_map.get(normalized)
+
+def build_shortcut_map(menu_items):
+    shortcut_map = {}
+    for idx, item in enumerate(menu_items):
+        keycode = parse_shortcut_to_keycode(item.get("shortcut", ""))
+        if keycode is not None:
+            shortcut_map[keycode] = idx
+    return shortcut_map
 
 def center_x(w, text):
     return max(0, (w - len(text)) // 2)
 
 def get_system_info():
     try:
-        host = subprocess.run(["scutil", "--get", "ComputerName"], capture_output=True, text=True, timeout=0.6)
+        host = subprocess.run(
+            ["scutil", "--get", "ComputerName"],
+            capture_output=True,
+            text=True,
+            timeout=0.6,
+        )
         host_name = host.stdout.strip() or os.uname().nodename
     except Exception:
         host_name = os.uname().nodename
 
     try:
-        ver = subprocess.run(["sw_vers", "-productVersion"], capture_output=True, text=True, timeout=0.6)
+        ver = subprocess.run(
+            ["sw_vers", "-productVersion"],
+            capture_output=True,
+            text=True,
+            timeout=0.6,
+        )
         os_ver = "macOS " + ver.stdout.strip()
     except Exception:
         os_ver = "macOS"
@@ -95,7 +167,8 @@ def get_weather(timeout_s=1.0):
     try:
         p = subprocess.run(
             ["curl", "-s", "--max-time", str(timeout_s), "https://wttr.in/?format=%c+%t"],
-            capture_output=True, text=True
+            capture_output=True,
+            text=True,
         )
         return p.stdout.strip()
     except Exception:
@@ -212,6 +285,27 @@ def draw_status(stdscr, left_text, weather, clock):
     except curses.error:
         pass
 
+def draw_menu_row(stdscr, y, left_col, label, shortcut, selected):
+    row_attr = curses.A_REVERSE if selected else curses.A_NORMAL
+    label_attr = MENU_LABEL_ATTR | row_attr
+    shortcut_attr = MENU_SHORTCUT_ATTR | row_attr
+
+    row_width = MENU_WIDTH
+    row_text_width = max(0, row_width - 1)
+
+    label = label[:row_text_width]
+    shortcut = shortcut[:row_text_width]
+
+    shortcut_x = left_col + max(0, row_width - len(shortcut))
+    max_label_width = max(0, shortcut_x - left_col - 1)
+    label = label[:max_label_width]
+
+    stdscr.addstr(y, left_col, " " * row_width, row_attr)
+    stdscr.addstr(y, left_col, label, label_attr)
+
+    if shortcut:
+        stdscr.addstr(y, shortcut_x, shortcut, shortcut_attr)
+
 def draw_full(stdscr, header_lines, menu_items, selected):
     stdscr.erase()
     h, w = stdscr.getmaxyx()
@@ -234,8 +328,7 @@ def draw_full(stdscr, header_lines, menu_items, selected):
                 pass
 
     mid = w // 2
-    left_col = mid - 20
-    right_col = mid + 16
+    left_col = mid - (MENU_WIDTH // 2)
 
     for i, it in enumerate(menu_items):
         y = start_y + header_h + HEADER_MENU_GAP + (i * MENU_ROW_HEIGHT)
@@ -243,18 +336,7 @@ def draw_full(stdscr, header_lines, menu_items, selected):
         shortcut = iconify_shortcut(it.get("shortcut", ""))
         if 0 <= y < h - 1:
             try:
-                item_attr = MENU_LABEL_ATTR
-                shortcut_attr = MENU_SHORTCUT_ATTR
-
-                if i == selected:
-                    stdscr.attron(curses.A_REVERSE)
-
-                stdscr.addstr(y, left_col, label[:max(0, w - left_col - 1)], item_attr)
-                stdscr.addstr(y, right_col, shortcut[:max(0, w - right_col - 1)], shortcut_attr)
-
-                if i == selected:
-                    stdscr.attroff(curses.A_REVERSE)
-
+                draw_menu_row(stdscr, y, left_col, label, shortcut, i == selected)
             except curses.error:
                 pass
 
@@ -274,30 +356,15 @@ def update_selection(stdscr, header_lines, menu_items, prev, cur):
     base = max(1, (h - (header_h + HEADER_MENU_GAP + menu_h)) // 2) + header_h + HEADER_MENU_GAP
 
     mid = w // 2
-    left_col = mid - 20
-    right_col = mid + 16
+    left_col = mid - (MENU_WIDTH // 2)
 
-    for row, idx in [(prev, prev), (cur, cur)]:
+    for idx in (prev, cur):
         if 0 <= idx < len(menu_items):
             y = base + (idx * MENU_ROW_HEIGHT)
-
             label = menu_items[idx].get("label", "")
             shortcut = iconify_shortcut(menu_items[idx].get("shortcut", ""))
             try:
-                item_attr = MENU_LABEL_ATTR
-                shortcut_attr = MENU_SHORTCUT_ATTR
-
-                stdscr.addstr(y, left_col, " " * max(0, w - left_col - 1))
-
-                if idx == cur:
-                    stdscr.attron(curses.A_REVERSE)
-
-                stdscr.addstr(y, left_col, label[:max(0, w - left_col - 1)], item_attr)
-                stdscr.addstr(y, right_col, shortcut[:max(0, w - right_col - 1)], shortcut_attr)
-
-                if idx == cur:
-                    stdscr.attroff(curses.A_REVERSE)
-
+                draw_menu_row(stdscr, y, left_col, label, shortcut, idx == cur)
             except curses.error:
                 pass
 
@@ -437,6 +504,23 @@ def brew_submenu_flow(stdscr):
         elif key in (27, ord("q")):
             return
 
+def run_menu_command(stdscr, cmd, selected):
+    if cmd == "shell":
+        return "exit"
+
+    if cmd == "popup":
+        extras_menu_flow(stdscr)
+        draw_full(stdscr, HEADER, MENU, selected)
+        return "continue"
+
+    curses.endwin()
+    subprocess.run(cmd, shell=True)
+    stdscr = curses.initscr()
+    stdscr.keypad(True)
+    init_colors()
+    draw_full(stdscr, HEADER, MENU, selected)
+    return "continue"
+
 def main(stdscr):
     init_colors()
     curses.curs_set(0)
@@ -444,6 +528,7 @@ def main(stdscr):
 
     selected = 0
     prev = 0
+    shortcut_map = build_shortcut_map(MENU)
 
     draw_full(stdscr, HEADER, MENU, selected)
     last_refresh = time.time()
@@ -460,7 +545,15 @@ def main(stdscr):
 
         key = stdscr.getch()
 
-        if key in (curses.KEY_UP, ord("k")):
+        if key in shortcut_map:
+            prev = selected
+            selected = shortcut_map[key]
+            update_selection(stdscr, HEADER, MENU, prev, selected)
+            cmd = MENU[selected].get("cmd", "")
+            result = run_menu_command(stdscr, cmd, selected)
+            if result == "exit":
+                return
+        elif key in (curses.KEY_UP, ord("k")):
             prev = selected
             selected = (selected - 1) % len(MENU)
             update_selection(stdscr, HEADER, MENU, prev, selected)
@@ -470,18 +563,9 @@ def main(stdscr):
             update_selection(stdscr, HEADER, MENU, prev, selected)
         elif key in (10, 13):
             cmd = MENU[selected].get("cmd", "")
-            if cmd == "shell":
+            result = run_menu_command(stdscr, cmd, selected)
+            if result == "exit":
                 return
-            if cmd == "popup":
-                extras_menu_flow(stdscr)
-                draw_full(stdscr, HEADER, MENU, selected)
-            else:
-                curses.endwin()
-                subprocess.run(cmd, shell=True)
-                stdscr = curses.initscr()
-                stdscr.keypad(True)
-                init_colors()
-                draw_full(stdscr, HEADER, MENU, selected)
         elif key in (27,):
             return
 
