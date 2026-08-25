@@ -31,8 +31,9 @@ Finder: https://github.com/sxyazi/yazi
 config is set to use .zshrc https://github.com/ohmyzsh/ohmyzsh/wiki/Installing-ZSH
 </br>
 </br>
-# header
-header.txt to change the header text
+
+# Customise Header & Menu names
+Use header.txt to change the header used with ascii & use menu.json to change the menu names.
 </br>
 
 # To run
