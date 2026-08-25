@@ -2,9 +2,6 @@
 
 # STUI - Start menu for your terminal.
 
-
-
-# info
 Python based start screen for your terminal. 
 clock, weather and minimal system Info.
 
