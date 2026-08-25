@@ -16,7 +16,7 @@
       "shortcut": "Ctrl+S"
     },
     {
-      "label": "Switch to shell",
+      "label": "Quit to shell",
       "cmd": "shell",
       "shortcut": "Ctrl+Space"
     }
