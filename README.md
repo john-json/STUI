@@ -1,15 +1,6 @@
 
 
-# STUI - Start menu for your terminal.
-
-Python based start screen for your terminal. 
-clock, weather and minimal system Info.
-
-# Screenshots
 ![stui_menu](https://raw.githubusercontent.com/john-json/customenu-cli/refs/heads/main/Screenshot.png)
-
-![sub_menu](https://raw.githubusercontent.com/john-json/customenu-cli/refs/heads/main/Screenshot_submenu.png)
-
 
 
 # Apps to install for best experience:
