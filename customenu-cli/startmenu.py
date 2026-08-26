@@ -32,6 +32,7 @@ os.makedirs(BASE_DIR, exist_ok=True)
 #   "Ctrl+Space"
 DEFAULT_MENU = {
     "menu": [
+        {"label": "Finder", "cmd": "bash -lc 'yazi'", "shortcut": "Ctrl+F"},
         {"label": "Editor", "cmd": "bash -lc 'nvim'", "shortcut": "Ctrl+E"},
         {"label": "Extras", "cmd": "popup", "shortcut": "Ctrl+X"},
         {"label": "Search", "cmd": "bash -lc 'fzf; read -p \"Enter\"'", "shortcut": "Ctrl+S"},
