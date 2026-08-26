@@ -59,7 +59,6 @@ BREW_SUB = [
 EXTRAS_ITEMS = [
     {"label": "System info", "cmd": "bash -lc 'macchina || uname -a; read -p \"Enter\"'"},
     {"label": "Resource monitor", "cmd": "bash -lc 'btop || echo \"btop not found\"; read -p \"Enter\"'"},
-    {"label": "Finder -> yazi", "cmd": "bash -lc 'yazi || echo \"yazi not found\"; read -p \"Enter\"'"},
     {"label": "Brew …", "cmd": "brewmenu"},
     {"label": "---", "cmd": None},
     {"label": "Matrix effect", "cmd": "bash -lc 'cmatrix || echo \"cmatrix not found\"; read -p \"Enter\"'"},
