@@ -26,10 +26,15 @@ Use header.txt to change the header used with ascii & use menu.json to change th
 
 # To run
 
+Install python
+```
+brew install python
+```
+Then
 ```
 python /path/to/menufolder/startmenu.py
 ```
-or add to zshrc to run with "menu" command
+Or add alias to zshrc to run with "menu" command
 
 ```
 alias menu="python3 ~/.config/customenu-cli/startmenu.py"
